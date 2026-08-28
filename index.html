@@ -457,7 +457,10 @@ select.fi{cursor:pointer}
   <div class="fg"><div class="fl">🎨 カラー</div><div class="cpick" id="cpick"></div></div>
   <div class="fg">
     <div class="fl">📸 写真（撮影・選択・URL）</div>
-    <div class="pha" id="phArea"><label class="ph-add" for="phIn"><span style="font-size:18px">📷</span><span>追加</span></label><input type="file" id="phIn" accept="image/*" multiple capture="camera" style="display:none"></div>
+    <div class="pha" id="phArea"><label class="ph-add" id="camLabel" style="cursor:pointer"><span style="font-size:22px">📷</span><span>カメラ</span></label>
+      <label class="ph-add" id="libLabel" style="border-color:var(--blue);color:var(--blue);cursor:pointer"><span style="font-size:22px">🖼️</span><span>アルバム</span></label>
+      <input type="file" id="phIn" accept="image/*" capture="environment" style="display:none">
+      <input type="file" id="phInLib" accept="image/*" multiple style="display:none"></div>
     <div class="urlrow"><input class="fi" id="phUrl" type="text" placeholder="写真URLを貼り付け"><button class="urlbtn" id="phUrlBtn">追加</button></div>
   </div>
   <div class="mb"><button class="mb-c" id="mdlCan">キャンセル</button><button class="mb-s" id="mdlSave">💾 保存する</button></div>
@@ -491,6 +494,8 @@ var ET={
 var LESSONS=['ピアノ🎹','英語📚','お絵かき🎨','書道✒️','スイミング🏊','体操🤸','サッカー⚽'];
 var DOW='日月火水木金土';
 var MONTHS=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+// GAS URLを直接埋め込む場合はここに設定（空文字のままでもOK）
+var EMBEDDED_GAS_URL = '';
 var LS={E:'kz9e',G:'kz9g',URL:'kz9url',LOC:'kz9loc',PWA:'kz9pwa'};
 
 // ============================================================
@@ -614,6 +619,7 @@ $('connBtn').onclick=function(){
       var d=JSON.parse(x.responseText);
       gasUrl=url;
       try{localStorage.setItem(LS.URL,url);}catch(e){}
+      // 次回以降はlocalStorageから自動読込
       entries=d.entries||[];
       if(d.guests&&d.guests.length)savedG=d.guests;
       lsSave();$('setup').style.display='none';
@@ -642,7 +648,18 @@ $('settingBtn').onclick=function(){
   gasGet();startPoll();setSB('ok','✅ URL更新しました');
 };
 function boot(){
-  try{var url=localStorage.getItem(LS.URL);if(url){gasUrl=url;lsLoad();renderAll();setupPWA();startPoll();gasGet();return;}}catch(e){}
+  // 埋め込みURL（設定済みなら自動接続）
+  var embedded = typeof EMBEDDED_GAS_URL !== 'undefined' ? EMBEDDED_GAS_URL : '';
+  try{
+    var url = localStorage.getItem(LS.URL) || embedded;
+    if(url){
+      gasUrl=url;
+      if(embedded && !localStorage.getItem(LS.URL)){
+        try{localStorage.setItem(LS.URL,url);}catch(e){}
+      }
+      lsLoad();renderAll();setupPWA();startPoll();gasGet();return;
+    }
+  }catch(e){}
   try{if(localStorage.getItem(LS.LOC)==='1'){lsLoad();if(!entries.length)initSample();renderAll();setupPWA();return;}}catch(e){}
   $('setup').style.display='block';
 }
@@ -977,9 +994,20 @@ $('gcIcs').onclick=function(){gcAction('ics');};
 // 地図
 // ============================================================
 $('mapBtn').onclick=function(){
-  var loc=$('fL').value.trim();if(!loc){alert('場所を入力してください');return;}
-  window.location.href='comgooglemaps://?q='+encodeURIComponent(loc);
-  setTimeout(function(){window.open('https://maps.google.com/?q='+encodeURIComponent(loc),'_blank');},800);
+  var loc=$('fL').value.trim();
+  if(!loc){alert('場所を入力してください');return;}
+  // iOSはGoogleマップアプリURLスキームを試みる、失敗したらブラウザで開く
+  var gUrl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(loc);
+  var aUrl='comgooglemaps://?q='+encodeURIComponent(loc);
+  // iOS判定
+  var isIOS=/iPhone|iPad|iPod/.test(navigator.userAgent);
+  if(isIOS){
+    // iOSではGoogleマップアプリを試みる（インストール済みなら開く）
+    window.location.href=aUrl;
+    setTimeout(function(){window.open(gUrl,'_blank');},1500);
+  } else {
+    window.open(gUrl,'_blank');
+  }
 };
 
 // ============================================================
@@ -1094,6 +1122,9 @@ function renderPh(){
   var lbl=$('phArea').querySelector('label');if(lbl)lbl.setAttribute('for','phIn');
 }
 
+// 写真ボタン（iOS対応）
+document.getElementById('camLabel').onclick = function(){document.getElementById('phIn').click();};
+document.getElementById('libLabel').onclick = function(){document.getElementById('phInLib').click();};
 $('phIn').onchange=function(ev){
   var files=ev.target.files;
   for(var i=0;i<files.length;i++)(function(f){
@@ -1102,6 +1133,18 @@ $('phIn').onchange=function(ev){
   ev.target.value='';
 };
 (function(){var pl=document.getElementById('phInLib');if(pl)pl.onchange=function(ev){var ff=ev.target.files;for(var ii=0;ii<ff.length;ii++)(function(f){var rd=new FileReader();rd.onload=function(e2){phList.push({src:e2.target.result});renderPh();};rd.readAsDataURL(f);})(ff[ii]);ev.target.value='';};})();
+(function(){
+  var _lib = document.getElementById('phInLib');
+  if(_lib) _lib.onchange = function(ev){
+    var files = ev.target.files;
+    for(var i=0;i<files.length;i++)(function(f){
+      var rd=new FileReader();
+      rd.onload=function(e2){phList.push({src:e2.target.result});renderPh();};
+      rd.readAsDataURL(f);
+    })(files[i]);
+    ev.target.value='';
+  };
+})();
 $('phUrlBtn').onclick=function(){
   var u=$('phUrl').value.trim();if(!u)return;
   phList.push({src:u});$('phUrl').value='';renderPh();

@@ -342,7 +342,7 @@ select.fi{cursor:pointer}
       <button class="su-btn su-go" id="connBtn">✅ 接続して始める</button>
     </div>
     <div class="su-sep">── または ──</div>
-    <button class="su-loc" id="localBtn">📱 この端末だけで使う（共有なし）</button>
+    <button class="su-loc" id="localBtn" style="background:var(--brown);color:var(--gold);border-color:var(--brown);font-size:15px;padding:16px">▶ 今すぐ始める<br><small style="font-size:11px;opacity:.8">（GAS設定は後でもOK・アプリ内⚙️から）</small></button>
   </div>
 </div>
 <div id="sb"></div>
@@ -636,31 +636,77 @@ $('localBtn').onclick=function(){
   $('setup').style.display='none';
   lsLoad();if(!entries.length)initSample();
   renderAll();setupPWA();
+  // GAS URL設定を促すバナーを3秒後に表示
+  setTimeout(function(){
+    setSB('ld','💡 ヘッダーの⚙️からGAS URLを設定するとiPhone・Mac全端末で共有できます');
+    setTimeout(function(){$('sb').style.display='none';},6000);
+  },1500);
 };
 $('settingBtn').onclick=function(){
-  var url=gasUrl||'';
-  var n=prompt('GASウェブアプリURL（変更する場合に入力）\n現在：'+(url||'未設定'),url);
-  if(n===null)return;n=n.trim();
-  if(!n){gasUrl='';try{localStorage.removeItem(LS.URL);}catch(e){}setSB('ok','接続解除しました');return;}
-  if(n.indexOf('script.google.com')<0){alert('URLが正しくありません');return;}
-  gasUrl=n;try{localStorage.setItem(LS.URL,n);}catch(e){}
-  if(pollTmr)clearInterval(pollTmr);
-  gasGet();startPoll();setSB('ok','✅ URL更新しました');
+  showUrlSettingModal();
 };
-function boot(){
-  // 埋め込みURL（設定済みなら自動接続）
-  var embedded = typeof EMBEDDED_GAS_URL !== 'undefined' ? EMBEDDED_GAS_URL : '';
-  try{
-    var url = localStorage.getItem(LS.URL) || embedded;
-    if(url){
-      gasUrl=url;
-      if(embedded && !localStorage.getItem(LS.URL)){
-        try{localStorage.setItem(LS.URL,url);}catch(e){}
+function showUrlSettingModal(){
+  var cur=gasUrl||localStorage.getItem('kz9url')||'';
+  var bg=document.createElement('div');
+  bg.style.cssText='position:fixed;inset:0;background:rgba(61,43,26,.7);z-index:800;display:flex;align-items:flex-end';
+  bg.innerHTML='<div style="background:#FDF6EE;border-radius:28px 28px 0 0;width:100%;padding:20px 18px 50px">'
+    +'<div style="width:40px;height:5px;background:#EDD9C0;border-radius:3px;margin:0 auto 20px"></div>'
+    +'<div style="font-size:18px;font-weight:900;margin-bottom:6px">⚙️ データ共有設定</div>'
+    +'<div style="font-size:13px;color:#A08060;margin-bottom:20px;line-height:1.7">GASのURLを設定すると<br>iPhone・Mac・iPad全部で予定が共有されます</div>'
+    +'<div style="font-size:12px;font-weight:700;color:#A08060;margin-bottom:6px">現在のURL</div>'
+    +'<div style="font-size:11px;background:#F5EDE0;padding:10px 12px;border-radius:10px;word-break:break-all;margin-bottom:16px;color:#3D2B1A">'+(cur?cur:'未設定')+'</div>'
+    +'<textarea id="gasUrlInput" style="width:100%;padding:13px;border:2px solid #EDD9C0;border-radius:14px;font-size:13px;height:80px;resize:none;outline:none;font-family:inherit;color:#2D1F10" placeholder="https://script.google.com/macros/s/...&#10;&#10;GASのURLをここに貼り付け">'+cur+'</textarea>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">'
+    +'<button id="suClose" style="padding:13px;border:2px solid #EDD9C0;border-radius:14px;background:#fff;font-size:14px;font-weight:700;color:#A08060;font-family:inherit;cursor:pointer">キャンセル</button>'
+    +'<button id="suSave" style="padding:13px;background:linear-gradient(135deg,#3D2B1A,#6B3E1E);border:none;border-radius:14px;font-size:14px;font-weight:900;color:#FFD700;font-family:inherit;cursor:pointer">✅ 保存して接続</button>'
+    +'</div></div>';
+  document.body.appendChild(bg);
+  document.getElementById('suClose').onclick=function(){document.body.removeChild(bg);};
+  bg.onclick=function(ev){if(ev.target===bg)document.body.removeChild(bg);};
+  document.getElementById('suSave').onclick=function(){
+    var n=document.getElementById('gasUrlInput').value.trim();
+    if(!n){
+      if(confirm('URLを空にすると共有が無効になります。よろしいですか？')){
+        gasUrl='';try{localStorage.removeItem('kz9url');}catch(e){}
+        document.body.removeChild(bg);setSB('ok','共有を無効にしました');
       }
-      lsLoad();renderAll();setupPWA();startPoll();gasGet();return;
+      return;
+    }
+    if(n.indexOf('script.google.com')<0){alert('GASのURLではありません\nhttps://script.google.com/... で始まるURLを入力してください');return;}
+    setSB('ld','🔄 接続テスト中...');
+    var x=new XMLHttpRequest();x.open('GET',n,true);
+    x.onreadystatechange=function(){
+      if(x.readyState!==4)return;
+      try{
+        var d=JSON.parse(x.responseText);
+        if(d.error){setSB('err','❌ '+d.error);return;}
+        gasUrl=n;try{localStorage.setItem('kz9url',n);}catch(e){}
+        entries=d.entries||[];
+        if(d.guests&&d.guests.length)savedG=d.guests;
+        lsSave();renderAll();
+        if(pollTmr)clearInterval(pollTmr);
+        pollTmr=setInterval(gasGet,20000);
+        document.body.removeChild(bg);
+        setSB('ok','✅ 接続完了！データを同期しました');
+      }catch(e){setSB('err','❌ 接続失敗。URLを確認してください');}
+    };
+    x.onerror=function(){setSB('err','❌ 通信エラー');};
+    x.send();
+  };
+}
+function boot(){
+  // 1. GAS URLがlocalStorageにあれば即接続
+  try{
+    var url=localStorage.getItem(LS.URL);
+    if(url){gasUrl=url;lsLoad();renderAll();setupPWA();startPoll();gasGet();return;}
+  }catch(e){}
+  // 2. ローカルモード設定があればそのまま起動
+  try{
+    if(localStorage.getItem(LS.LOC)==='1'){
+      lsLoad();if(!entries.length)initSample();renderAll();setupPWA();return;
     }
   }catch(e){}
-  try{if(localStorage.getItem(LS.LOC)==='1'){lsLoad();if(!entries.length)initSample();renderAll();setupPWA();return;}}catch(e){}
+  // 3. 初回起動: セットアップ画面を表示（でもスキップ可能）
   $('setup').style.display='block';
 }
 

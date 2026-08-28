@@ -194,6 +194,39 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.6}select.fi{cursor:poi
 .bni .bi{font-size:18px}.bni.on{color:#3D2B1A}
 .bnc{flex:1;display:flex;align-items:center;justify-content:center}
 .bn-p{width:50px;height:50px;background:linear-gradient(135deg,#3D2B1A,#6B3E1E);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#FFD700;box-shadow:0 4px 14px rgba(61,43,26,.4);margin-top:-18px;border:none;cursor:pointer}
+
+/* ===== ALBUM ===== */
+.alb-card{background:#FFFBF5;border-radius:16px;margin-bottom:12px;overflow:hidden;box-shadow:0 3px 14px rgba(61,43,26,.1);border:1.5px solid #EDD9C0}
+.alb-cover{height:160px;background:linear-gradient(135deg,#3D2B1A,#6B3E1E);position:relative;display:flex;align-items:center;justify-content:center}
+.alb-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.7));padding:12px 14px 10px}
+.alb-name{font-size:16px;font-weight:900;color:#fff}
+.alb-meta{font-size:11px;color:rgba(255,255,255,.75);margin-top:2px}
+.alb-desc{padding:8px 14px;font-size:12px;color:#A08060;border-bottom:1px solid #EDD9C0}
+.alb-acts{display:flex;gap:6px;padding:10px 12px}
+.alb-btn{flex:1;padding:8px;border:1.5px solid #EDD9C0;border-radius:10px;font-size:12px;font-weight:700;color:#3D2B1A;background:#fff;cursor:pointer}
+.alb-btn.del{flex:0 0 40px;background:#FDECEA;border-color:#F5CCCC;color:#C0392B}
+/* ===== TIMELINE ===== */
+.tl-day{margin-bottom:20px}
+.tl-day-hd{font-size:13px;font-weight:900;color:#fff;background:linear-gradient(135deg,#3D2B1A,#6B3E1E);padding:8px 14px;border-radius:10px;margin-bottom:10px}
+.tl-photos{display:flex;gap:6px;overflow-x:auto;padding:0 0 8px;scrollbar-width:none;margin-bottom:8px}
+.tl-photos::-webkit-scrollbar{display:none}
+.tl-ph-wrap{flex-shrink:0;text-align:center}
+.tl-ph{width:100px;height:80px;object-fit:cover;border-radius:10px;border:1.5px solid #EDD9C0;cursor:pointer;display:block}
+.tl-ph-cap{font-size:9px;color:#A08060;margin-top:3px;max-width:100px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.tl-events{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:0;align-items:stretch}
+.tl-time{width:44px;min-width:44px;font-size:10px;font-weight:700;color:#A08060;text-align:right;padding-right:8px;padding-top:12px}
+.tl-dot{width:12px;min-width:12px;position:relative;display:flex;flex-direction:column;align-items:center}
+.tl-dot::before{content:'';width:12px;height:12px;border-radius:50%;background:inherit;flex-shrink:0;margin-top:12px}
+.tl-dot::after{content:'';width:2px;background:#EDD9C0;flex:1;margin-top:4px}
+.tl-content{flex:1;background:#FFFBF5;border:1.5px solid #EDD9C0;border-radius:12px;padding:10px 12px;margin:6px 0 6px 10px}
+.tl-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.tl-loc{font-size:11px;color:#4285F4;font-weight:600;margin-bottom:3px}
+.tl-memo{font-size:11px;color:#A08060;line-height:1.6;margin-bottom:3px}
+.tl-diary{font-size:12px;color:#5A3A1A;line-height:1.7;background:#FFF5EE;border-left:3px solid #D4439D;padding:6px 8px;border-radius:6px;margin-bottom:3px}
+.tl-acts{display:flex;gap:5px;margin-top:6px}
+.tl-btn{padding:4px 10px;border:1.5px solid #EDD9C0;border-radius:8px;font-size:11px;font-weight:700;color:#3D2B1A;background:#fff;cursor:pointer}
+.tl-btn.del{background:#FDECEA;border-color:#F5CCCC;color:#C0392B}
 </style>
 </head>
 <body>
@@ -257,6 +290,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.6}select.fi{cursor:poi
   <div class="bnc"><button class="bn-p" id="bnAdd">＋</button></div>
   <div class="bni" id="bnT"><span class="bi">✅</span>タスク</div>
   <div class="bni" id="bnLe"><span class="bi">🎵</span>習い事</div>
+  <div class="bni" id="bnAlb"><span class="bi">📁</span>アルバム</div>
 </div>
 <div class="sht-bg" id="gcBg">
   <div class="sht">
@@ -324,7 +358,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.6}select.fi{cursor:poi
   <div class="fg"><div class="fl">🎨 カラー</div><div class="cpick" id="cpick"></div></div>
   <div class="fg">
     <div class="fl">📸 写真</div>
-    <div class="pha" id="phArea"><label class="ph-add" for="phIn"><span style="font-size:18px">📷</span><span>追加</span></label><input type="file" id="phIn" accept="image/*" multiple style="display:none"></div>
+    <div class="pha" id="phArea"><label class="ph-add" for="phIn"><span style="font-size:18px">📷</span><span>追加</span></label><input type="file" id="phIn" accept="image/*" multiple capture="camera" style="display:none"></div>
     <div class="urlrow"><input class="fi" id="phUrl" type="text" placeholder="写真URLを貼り付け"><button class="urlbtn" id="phUrlBtn">追加</button></div>
   </div>
   <div class="mb"><button class="mb-c" id="mdlCan">キャンセル</button><button class="mb-s" id="mdlSave">💾 保存する</button></div>
@@ -335,7 +369,7 @@ textarea.fi{resize:vertical;min-height:70px;line-height:1.6}select.fi{cursor:poi
 // ============================================================
 // GASバックエンドコード（アプリ内埋め込み）
 // ============================================================
-var GAS_CODE = "var SHEET='entries';\nvar COLS=['id','etype','title','date','time','members','guests','who','what','location','memo','diary','deadline','priority','amount','payDL','payTo','lessonAmt','lessonRep','color','photos','done','updatedAt'];\nfunction getSheet(){var ss=SpreadsheetApp.getActiveSpreadsheet();var sh=ss.getSheetByName(SHEET);if(!sh){sh=ss.insertSheet(SHEET);sh.getRange(1,1,1,COLS.length).setValues([COLS]);sh.setFrozenRows(1);}return sh;}\nfunction res(d){return ContentService.createTextOutput(JSON.stringify(d)).setMimeType(ContentService.MimeType.JSON);}\nfunction doGet(e){try{return res(listAll());}catch(err){return res({error:err.message});}}\nfunction doPost(e){try{var b=JSON.parse(e.postData.contents);if(b.action==='save')return res(saveOne(b.entry));if(b.action==='delete')return res(delOne(b.id));if(b.action==='guests')return res(saveGuests(b.guests));return res({error:'unknown'});}catch(err){return res({error:err.message});}}\nfunction listAll(){var sh=getSheet(),n=sh.getLastRow(),g=getGuests();if(n<2)return{entries:[],guests:g};var rows=sh.getRange(2,1,n-1,COLS.length).getValues();var arr=[];for(var i=0;i<rows.length;i++){var r=rows[i];if(!r[0])continue;var o={};for(var j=0;j<COLS.length;j++){var c=COLS[j],v=r[j];if(c==='members'||c==='guests'||c==='photos'){try{o[c]=JSON.parse(v||'[]');}catch(x){o[c]=[];}}else if(c==='done'){o[c]=(v===true||v==='true');}else{o[c]=(v===null||v===undefined)?'':''+v;}}arr.push(o);}return{entries:arr,guests:g};}\nfunction saveOne(e){var sh=getSheet(),n=sh.getLastRow(),ri=-1;if(n>=2){var ids=sh.getRange(2,1,n-1,1).getValues();for(var i=0;i<ids.length;i++)if(''+ids[i][0]===''+e.id){ri=i+2;break;}}var row=[];for(var j=0;j<COLS.length;j++){var c=COLS[j];if(c==='members'||c==='guests'||c==='photos')row.push(JSON.stringify(e[c]||[]));else if(c==='updatedAt')row.push(new Date().toISOString());else if(c==='done')row.push(e[c]?'true':'false');else row.push(e[c]!=null?''+e[c]:'');}if(ri>0)sh.getRange(ri,1,1,COLS.length).setValues([row]);else sh.appendRow(row);SpreadsheetApp.flush();return{ok:true};}\nfunction delOne(id){var sh=getSheet(),n=sh.getLastRow();if(n<2)return{ok:true};var ids=sh.getRange(2,1,n-1,1).getValues();for(var i=ids.length-1;i>=0;i--)if(''+ids[i][0]===''+id){sh.deleteRow(i+2);SpreadsheetApp.flush();return{ok:true};}return{ok:true};}\nfunction saveGuests(g){PropertiesService.getScriptProperties().setProperty('guests',JSON.stringify(g||[]));return{ok:true};}\nfunction getGuests(){try{return JSON.parse(PropertiesService.getScriptProperties().getProperty('guests')||'[]');}catch(e){return[];}}";
+var GAS_CODE = "var SHEET='entries';\nvar COLS=['id','etype','title','date','time','members','guests','who','what','location','memo','diary','deadline','priority','amount','payDL','payTo','lessonAmt','lessonRep','color','photos','done','updatedAt'];\nfunction getSheet(){var ss=SpreadsheetApp.getActiveSpreadsheet();var sh=ss.getSheetByName(SHEET);if(!sh){sh=ss.insertSheet(SHEET);sh.getRange(1,1,1,COLS.length).setValues([COLS]);sh.setFrozenRows(1);}return sh;}\nfunction res(d){return ContentService.createTextOutput(JSON.stringify(d)).setMimeType(ContentService.MimeType.JSON);}\nfunction doGet(e){try{return res(listAll());}catch(err){return res({error:err.message});}}\nfunction doPost(e){try{var b=JSON.parse(e.postData.contents);if(b.action==='save')return res(saveOne(b.entry));if(b.action==='delete')return res(delOne(b.id));if(b.action==='guests')return res(saveGuests(b.guests));if(b.action==='albums')return res(saveAlbums(b.albums));return res({error:'unknown'});}catch(err){return res({error:err.message});}}\nfunction listAll(){var sh=getSheet(),n=sh.getLastRow(),g=getGuests(),a=getAlbums();if(n<2)return{entries:[],guests:g,albums:a};var rows=sh.getRange(2,1,n-1,COLS.length).getValues();var arr=[];for(var i=0;i<rows.length;i++){var r=rows[i];if(!r[0])continue;var o={};for(var j=0;j<COLS.length;j++){var c=COLS[j],v=r[j];if(c==='members'||c==='guests'||c==='photos'){try{o[c]=JSON.parse(v||'[]');}catch(x){o[c]=[];}}else if(c==='done'){o[c]=(v===true||v==='true');}else{o[c]=(v===null||v===undefined)?'':''+v;}}arr.push(o);}return{entries:arr,guests:g};}\nfunction saveOne(e){var sh=getSheet(),n=sh.getLastRow(),ri=-1;if(n>=2){var ids=sh.getRange(2,1,n-1,1).getValues();for(var i=0;i<ids.length;i++)if(''+ids[i][0]===''+e.id){ri=i+2;break;}}var row=[];for(var j=0;j<COLS.length;j++){var c=COLS[j];if(c==='members'||c==='guests'||c==='photos')row.push(JSON.stringify(e[c]||[]));else if(c==='updatedAt')row.push(new Date().toISOString());else if(c==='done')row.push(e[c]?'true':'false');else row.push(e[c]!=null?''+e[c]:'');}if(ri>0)sh.getRange(ri,1,1,COLS.length).setValues([row]);else sh.appendRow(row);SpreadsheetApp.flush();return{ok:true};}\nfunction delOne(id){var sh=getSheet(),n=sh.getLastRow();if(n<2)return{ok:true};var ids=sh.getRange(2,1,n-1,1).getValues();for(var i=ids.length-1;i>=0;i--)if(''+ids[i][0]===''+id){sh.deleteRow(i+2);SpreadsheetApp.flush();return{ok:true};}return{ok:true};}\nfunction saveGuests(g){PropertiesService.getScriptProperties().setProperty('guests',JSON.stringify(g||[]));return{ok:true};}\nfunction getGuests(){try{return JSON.parse(PropertiesService.getScriptProperties().getProperty('guests')||'[]');}catch(e){return[];}}\nfunction saveAlbums(a){PropertiesService.getScriptProperties().setProperty('albums',JSON.stringify(a||[]));return{ok:true};}\nfunction getAlbums(){try{return JSON.parse(PropertiesService.getScriptProperties().getProperty('albums')||'[]');}catch(e){return[];}}";
 
 // ============================================================
 // 定数
@@ -449,6 +483,7 @@ function gasGet(){
       if(pending>0)return;
       entries=d.entries||[];
       if(d.guests&&d.guests.length)savedG=d.guests;
+      if(d.albums&&d.albums.length){albums=d.albums;try{localStorage.setItem(LS_ALB,JSON.stringify(albums));}catch(e){}}
       lsSave();renderCal();renderList();
       setSB('ok','✅ 同期完了');
     }catch(e){setSB('err','❌ 通信エラー');}
@@ -594,6 +629,16 @@ function setView(v){
   $('vsL').className='vsb'+(v==='list'?' on':'');
   $('calView').style.display=v==='cal'?'block':'none';
   $('listView').style.display=v==='list'?'block':'none';
+  $('albView').style.display=v==='alb'?'block':'none';
+  var bns=['bnH','bnD','bnT','bnLe','bnAlb'];
+  bns.forEach(function(b){var el=$(b);if(el)el.className='bni';});
+  if(v==='alb'&&$('bnAlb'))$('bnAlb').className='bni on';
+  else if(v==='cal'&&$('bnH'))$('bnH').className='bni on';
+  else if(v==='list'){
+    if(tf==='diary'&&$('bnD'))$('bnD').className='bni on';
+    else if(tf==='task'&&$('bnT'))$('bnT').className='bni on';
+    else if(tf==='lesson'&&$('bnLe'))$('bnLe').className='bni on';
+  }
 }
 
 // ============================================================
@@ -990,11 +1035,309 @@ function saveEntry(){
 // 全描画
 // ============================================================
 function renderAll(){renderMBar();renderCal();renderList();}
+// アルバムナビ
+(function(){
+  var bnAlb=document.getElementById('bnAlb');
+  if(bnAlb)bnAlb.onclick=function(){
+    setView('alb');
+    var tabs=['tab-all','tab-schedule','tab-diary','tab-task','tab-payment','tab-lesson'];
+    tabs.forEach(function(t){var el=document.getElementById(t);if(el)el.className='tt';});
+    renderAlbums();
+  };
+  var albAddBtn=document.getElementById('albAddBtn');
+  if(albAddBtn)albAddBtn.onclick=function(){openAlbumModal(null);};
+})();
 
 // ============================================================
 // 起動
 // ============================================================
 boot();
+albLoad();
+
+// ============================================================
+// 追加機能: 旅行アルバム + 写真タイムライン + コメント
+// ============================================================
+
+// ===== 旅行アルバムデータ =====
+var albums = [];  // [{id, name, desc, cover, date, entries:[entryIds], createdAt}]
+var LS_ALB = 'kz9alb';
+
+function albLoad(){
+  try{albums=JSON.parse(localStorage.getItem(LS_ALB)||'[]');}catch(e){albums=[];}
+}
+function albSave(){
+  try{localStorage.setItem(LS_ALB,JSON.stringify(albums));}catch(e){}
+  if(gasUrl)gasPost({action:'albums',albums:albums},null);
+}
+
+// ===== アルバムビュー HTML =====
+var ALBUM_HTML = `
+<div id="albView" style="display:none">
+  <div class="lhd">
+    <span class="lhd-t">📁 旅行アルバム</span>
+    <button class="add-btn" id="albAddBtn">＋ 新しい旅行</button>
+  </div>
+  <div id="albList" style="padding:0 8px"></div>
+</div>
+`;
+
+// アルバム一覧描画
+function renderAlbums(){
+  var el=document.getElementById('albList');
+  if(!el)return;
+  if(!albums.length){
+    el.innerHTML='<div class="no-ev">📁 旅行アルバムなし<br><small>「＋ 新しい旅行」で作ろう</small></div>';
+    return;
+  }
+  el.innerHTML=albums.map(function(alb){
+    // アルバム内の予定から写真を集める
+    var photos=[];
+    var albEntries=entries.filter(function(e){return alb.entries&&alb.entries.indexOf(e.id)>=0;});
+    albEntries.forEach(function(e){if(e.photos)e.photos.forEach(function(p){photos.push(p);});});
+    var cover=alb.cover||photos[0]||'';
+    var photoCount=photos.length;
+    var entryCount=albEntries.length;
+    return '<div class="alb-card" data-aid="'+alb.id+'">'
+      +'<div class="alb-cover" style="background:'+(cover?'url('+cover+') center/cover':'linear-gradient(135deg,#3D2B1A,#6B3E1E)')+';">'
+      +(cover?'':'<span style="font-size:48px">✈️</span>')
+      +'<div class="alb-overlay">'
+      +'<div class="alb-name">'+esc(alb.name)+'</div>'
+      +'<div class="alb-meta">'+(alb.date||'')+'　📷'+photoCount+'枚　📅'+entryCount+'件</div>'
+      +'</div></div>'
+      +(alb.desc?'<div class="alb-desc">'+esc(alb.desc)+'</div>':'')
+      +'<div class="alb-acts">'
+      +'<button class="alb-btn" data-act="open" data-aid="'+alb.id+'">📖 開く</button>'
+      +'<button class="alb-btn" data-act="edit" data-aid="'+alb.id+'">✏️ 編集</button>'
+      +'<button class="alb-btn del" data-act="del" data-aid="'+alb.id+'">🗑️</button>'
+      +'</div></div>';
+  }).join('');
+  // イベント
+  document.getElementById('albList').onclick=function(ev){
+    var t=ev.target;
+    while(t&&t!==el){
+      var act=t.getAttribute('data-act'),aid=t.getAttribute('data-aid');
+      if(act&&aid){
+        if(act==='open')openAlbum(aid);
+        else if(act==='edit')editAlbum(aid);
+        else if(act==='del')deleteAlbum(aid);
+        return;
+      }
+      t=t.parentNode;
+    }
+  };
+}
+
+// アルバム詳細（タイムライン）表示
+function openAlbum(aid){
+  var alb=null;for(var i=0;i<albums.length;i++)if(albums[i].id===aid){alb=albums[i];break;}
+  if(!alb)return;
+  var albEntries=entries.filter(function(e){return alb.entries&&alb.entries.indexOf(e.id)>=0;})
+    .sort(function(a,b){return(a.date+(a.time||'')).localeCompare(b.date+(b.time||''));});
+  
+  var html='<div style="padding:0 8px">';
+  html+='<div style="display:flex;align-items:center;gap:8px;padding:10px 4px 14px">'
+    +'<button onclick="showAlbView()" style="background:#F5E8D0;border:none;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700;color:#3D2B1A;cursor:pointer">← 戻る</button>'
+    +'<div><div style="font-size:16px;font-weight:900">'+esc(alb.name)+'</div>'
+    +(alb.date?'<div style="font-size:11px;color:#A08060">'+esc(alb.date)+'</div>':'')
+    +'</div>'
+    +'<button onclick="addEntryToAlbum(\''+aid+'\')" style="margin-left:auto;background:#3D2B1A;color:#FFD700;border:none;border-radius:20px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer">＋ 追加</button>'
+    +'</div>';
+  
+  if(!albEntries.length){
+    html+='<div class="no-ev">📭 まだ予定がありません<br><small>「＋ 追加」で旅行の予定・日記を追加しよう</small></div>';
+  } else {
+    // 日付グループ化
+    var byDate={};
+    albEntries.forEach(function(e){var d=e.date||'不明';if(!byDate[d])byDate[d]=[];byDate[d].push(e);});
+    var dates=Object.keys(byDate).sort();
+    dates.forEach(function(d,di){
+      var pd=parseD(d);
+      var dLabel=pd?(pd.getMonth()+1)+'月'+pd.getDate()+'日（'+DOW[pd.getDay()]+'）DAY '+(di+1):d;
+      html+='<div class="tl-day"><div class="tl-day-hd">'+dLabel+'</div>';
+      // その日の写真まとめ
+      var dayPhotos=[];
+      byDate[d].forEach(function(e){if(e.photos)e.photos.forEach(function(p){dayPhotos.push({src:p,title:e.title,time:e.time});});});
+      if(dayPhotos.length){
+        html+='<div class="tl-photos">';
+        dayPhotos.forEach(function(ph){
+          html+='<div class="tl-ph-wrap"><img class="tl-ph" src="'+esc(ph.src)+'" data-src="'+esc(ph.src)+'" alt="'+(ph.title||'')+'"><div class="tl-ph-cap">'+(ph.time||'')+(ph.time&&ph.title?' ':'')+(ph.title||'')+'</div></div>';
+        });
+        html+='</div>';
+      }
+      // イベントタイムライン
+      html+='<div class="tl-events">';
+      byDate[d].forEach(function(e){
+        var ti=ET[e.etype]||ET.schedule;
+        html+='<div class="tl-item">'
+          +'<div class="tl-time">'+(e.time||'終日')+'</div>'
+          +'<div class="tl-dot" style="background:'+(e.color||ti.c)+'"></div>'
+          +'<div class="tl-content">'
+          +'<div class="tl-title">'+ti.i+' '+esc(e.title)+'</div>'
+          +(e.location?'<div class="tl-loc">📍 '+esc(e.location)+'</div>':'')
+          +(e.memo?'<div class="tl-memo">'+esc(e.memo)+'</div>':'')
+          +(e.diary?'<div class="tl-diary">'+esc(e.diary)+'</div>':'')
+          +'<div class="tl-acts">'
+          +'<button class="tl-btn" data-act="edit" data-eid="'+e.id+'">✏️ 編集</button>'
+          +'<button class="tl-btn del" data-act="rmv" data-eid="'+e.id+'" data-aid="'+aid+'">✕ 外す</button>'
+          +'</div></div></div>';
+      });
+      html+='</div></div>';
+    });
+  }
+  html+='</div>';
+  
+  var lv=document.getElementById('albDetail');
+  if(!lv){lv=document.createElement('div');lv.id='albDetail';document.getElementById('albView').appendChild(lv);}
+  lv.innerHTML=html;
+  document.getElementById('albList').style.display='none';
+  document.querySelector('.lhd')&&(document.querySelector('#albView .lhd').style.display='none');
+  lv.style.display='block';
+  
+  // 写真クリック
+  lv.querySelectorAll('.tl-ph').forEach(function(img){
+    img.onclick=function(){document.getElementById('lbImg').src=img.getAttribute('data-src');document.getElementById('lb').style.display='flex';};
+  });
+  // ボタン
+  lv.onclick=function(ev){
+    var t=ev.target;
+    while(t&&t!==lv){
+      var act=t.getAttribute('data-act');
+      if(act==='edit'){openModal(t.getAttribute('data-eid'));return;}
+      if(act==='rmv'){
+        var eid=t.getAttribute('data-eid'),aid2=t.getAttribute('data-aid');
+        removeFromAlbum(aid2,eid);openAlbum(aid2);return;
+      }
+      t=t.parentNode;
+    }
+  };
+}
+
+function showAlbView(){
+  var det=document.getElementById('albDetail');if(det)det.style.display='none';
+  document.getElementById('albList').style.display='block';
+  var lhd=document.querySelector('#albView .lhd');if(lhd)lhd.style.display='flex';
+  renderAlbums();
+}
+
+function removeFromAlbum(aid,eid){
+  for(var i=0;i<albums.length;i++){
+    if(albums[i].id===aid){
+      albums[i].entries=(albums[i].entries||[]).filter(function(e){return e!==eid;});
+      albSave();return;
+    }
+  }
+}
+
+function addEntryToAlbum(aid){
+  // 現在のentriesから選択するモーダルを開く
+  openEntryPickerForAlbum(aid);
+}
+
+// アルバム作成/編集モーダル
+var editAlbId=null;
+function openAlbumModal(aid){
+  editAlbId=aid||null;
+  var alb=null;if(aid)for(var i=0;i<albums.length;i++)if(albums[i].id===aid){alb=albums[i];break;}
+  
+  var html='<div style="background:rgba(61,43,26,.55);position:fixed;inset:0;z-index:500;display:flex;align-items:flex-end" id="albModal">'
+    +'<div style="background:#FDF6EE;border-radius:24px 24px 0 0;width:100%;padding:16px 16px 50px;max-height:85vh;overflow-y:auto">'
+    +'<div style="width:36px;height:4px;background:#EDD9C0;border-radius:2px;margin:0 auto 16px"></div>'
+    +'<div style="font-size:17px;font-weight:900;margin-bottom:16px">'+(alb?'旅行アルバムを編集':'新しい旅行アルバム')+'</div>'
+    +'<div style="margin-bottom:11px"><label style="font-size:10px;font-weight:700;color:#A08060;display:block;margin-bottom:4px">✈️ 旅行名</label>'
+    +'<input id="albName" class="fi" placeholder="例：鹿児島家族旅行" value="'+(alb?esc(alb.name):'')+'" style="width:100%;padding:10px;border:1.5px solid #EDD9C0;border-radius:11px;font-size:14px;outline:none"></div>'
+    +'<div style="margin-bottom:11px"><label style="font-size:10px;font-weight:700;color:#A08060;display:block;margin-bottom:4px">📅 期間</label>'
+    +'<input id="albDate" class="fi" placeholder="例：2026年8月13日〜16日" value="'+(alb?esc(alb.date||''):'')+'" style="width:100%;padding:10px;border:1.5px solid #EDD9C0;border-radius:11px;font-size:14px;outline:none"></div>'
+    +'<div style="margin-bottom:11px"><label style="font-size:10px;font-weight:700;color:#A08060;display:block;margin-bottom:4px">📝 メモ</label>'
+    +'<textarea id="albDesc" placeholder="旅行の感想・メモなど" style="width:100%;padding:10px;border:1.5px solid #EDD9C0;border-radius:11px;font-size:14px;outline:none;min-height:60px;resize:vertical;background:#fff">'+(alb?esc(alb.desc||''):'')+'</textarea></div>'
+    +'<div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:14px">'
+    +'<button onclick="document.getElementById(\'albModal\').remove()" style="padding:13px;border:2px solid #EDD9C0;border-radius:12px;background:#fff;font-size:13px;font-weight:700;color:#A08060;font-family:inherit;cursor:pointer">キャンセル</button>'
+    +'<button onclick="saveAlbum()" style="padding:13px;background:#3D2B1A;border:none;border-radius:12px;font-size:14px;font-weight:900;color:#FFD700;font-family:inherit;cursor:pointer">💾 保存する</button>'
+    +'</div></div></div>';
+  var el=document.createElement('div');el.innerHTML=html;document.body.appendChild(el.firstChild);
+}
+window.saveAlbum=function(){
+  var name=document.getElementById('albName').value.trim();
+  if(!name){alert('旅行名を入力してください');return;}
+  var date=document.getElementById('albDate').value.trim();
+  var desc=document.getElementById('albDesc').value.trim();
+  if(editAlbId){
+    for(var i=0;i<albums.length;i++)if(albums[i].id===editAlbId){albums[i].name=name;albums[i].date=date;albums[i].desc=desc;break;}
+  }else{
+    albums.push({id:String(Date.now()),name:name,date:date,desc:desc,entries:[],cover:'',createdAt:new Date().toISOString()});
+  }
+  albSave();
+  document.getElementById('albModal').remove();
+  renderAlbums();
+};
+window.showAlbView=showAlbView;
+
+function editAlbum(aid){openAlbumModal(aid);}
+function deleteAlbum(aid){
+  showCF('このアルバムを削除しますか？（予定は削除されません）',function(){
+    albums=albums.filter(function(a){return a.id!==aid;});
+    albSave();renderAlbums();
+  });
+}
+
+// エントリーをアルバムに追加するピッカー
+function openEntryPickerForAlbum(aid){
+  var alb=null;for(var i=0;i<albums.length;i++)if(albums[i].id===aid){alb=albums[i];break;}
+  if(!alb)return;
+  var existing=alb.entries||[];
+  var sorted=entries.slice().sort(function(a,b){return(a.date||'').localeCompare(b.date||'');});
+  
+  var html='<div style="background:rgba(61,43,26,.55);position:fixed;inset:0;z-index:500;display:flex;align-items:flex-end" id="pickerModal">'
+    +'<div style="background:#FDF6EE;border-radius:24px 24px 0 0;width:100%;padding:16px 16px 50px;max-height:85vh;overflow-y:auto">'
+    +'<div style="width:36px;height:4px;background:#EDD9C0;border-radius:2px;margin:0 auto 16px"></div>'
+    +'<div style="font-size:15px;font-weight:900;margin-bottom:4px">「'+esc(alb.name)+'」に追加する予定を選択</div>'
+    +'<div style="font-size:11px;color:#A08060;margin-bottom:14px">タップで選択（複数OK）</div>'
+    +'<div id="pickerItems">'
+    +sorted.map(function(e){
+      var on=existing.indexOf(e.id)>=0;
+      var ti=ET[e.etype]||ET.schedule;
+      return '<div class="picker-item'+(on?' on':'')+'" data-eid="'+e.id+'" style="display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:6px;background:'+(on?'#FFF3E0':'#fff')+';border:2px solid '+(on?'#E05C2A':'#EDD9C0')+';border-radius:12px;cursor:pointer">'
+        +'<div style="width:26px;height:26px;border-radius:50%;background:'+(on?'#E05C2A':'#EDD9C0')+';display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">'+(on?'✓':'')+'</div>'
+        +'<div><div style="font-size:13px;font-weight:700">'+ti.i+' '+esc(e.title)+'</div>'
+        +'<div style="font-size:10px;color:#A08060">'+fmtD(e.date)+(e.time?' '+e.time:'')+(e.location?' 📍'+esc(e.location):'')+'</div></div>'
+        +(e.photos&&e.photos.length?'<div style="margin-left:auto;font-size:10px;color:#A08060">📷'+e.photos.length+'</div>':'')
+        +'</div>';
+    }).join('')
+    +'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:16px">'
+    +'<button onclick="document.getElementById(\'pickerModal\').remove();openAlbum(\''+aid+'\')" style="padding:13px;border:2px solid #EDD9C0;border-radius:12px;background:#fff;font-size:13px;font-weight:700;color:#A08060;font-family:inherit;cursor:pointer">閉じる</button>'
+    +'<button onclick="savePicker(\''+aid+'\')" style="padding:13px;background:#3D2B1A;border:none;border-radius:12px;font-size:14px;font-weight:900;color:#FFD700;font-family:inherit;cursor:pointer">✅ 追加する</button>'
+    +'</div></div></div>';
+  var el=document.createElement('div');el.innerHTML=html;document.body.appendChild(el.firstChild);
+  
+  document.getElementById('pickerItems').onclick=function(ev){
+    var t=ev.target;
+    while(t&&t!==this){
+      var eid=t.getAttribute('data-eid');
+      if(eid){
+        t.classList.toggle('on');
+        var isOn=t.classList.contains('on');
+        t.style.background=isOn?'#FFF3E0':'#fff';
+        t.style.borderColor=isOn?'#E05C2A':'#EDD9C0';
+        t.querySelector('div').style.background=isOn?'#E05C2A':'#EDD9C0';
+        t.querySelector('div').textContent=isOn?'✓':'';
+        return;
+      }
+      t=t.parentNode;
+    }
+  };
+}
+window.savePicker=function(aid){
+  var items=document.querySelectorAll('#pickerItems .picker-item.on');
+  var sel=[];items.forEach(function(it){sel.push(it.getAttribute('data-eid'));});
+  for(var i=0;i<albums.length;i++){
+    if(albums[i].id===aid){
+      albums[i].entries=sel;break;
+    }
+  }
+  albSave();
+  document.getElementById('pickerModal').remove();
+  openAlbum(aid);
+};
 
 </script>
 </body>
